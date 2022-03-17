@@ -27,6 +27,8 @@ class MycroftMark2(PHALPlugin):
         self.switches.user_mute_handler = self._on_mute
         self._last_mute = -1
         self.switches.user_action_handler = self.on_button_press
+        self.switches.user_voldown_handler = self.on_button_voldown_press
+        self.switches.user_volup_handler = self.on_button_volup_press
         self._last_press = 0
 
         # start the temperature monitor thread
@@ -55,11 +57,25 @@ class MycroftMark2(PHALPlugin):
                 self.on_hardware_mute()
 
     def on_button_press(self):
-        LOG.debug("Mark2:HardwareEnclosure:handle_action()")
+        LOG.debug("SJ201 Listen button pressed")
         # debounce this 10 seconds
         if time.time() - self._last_press > 10:
             self._last_press = time.time()
             self.bus.emit(Message("mycroft.mic.listen"))
+
+    def on_button_volup_press(self):
+        LOG.debug("SJ201 VolumeUp button pressed")
+        # debounce this 10 seconds
+        if time.time() - self._last_press > 10:
+            self._last_press = time.time()
+            self.bus.emit(Message("mycroft.volume.increase"))
+
+    def on_button_voldown_press(self):
+        LOG.debug("SJ201 VolumeDown button pressed")
+        # debounce this 10 seconds
+        if time.time() - self._last_press > 10:
+            self._last_press = time.time()
+            self.bus.emit(Message("mycroft.volume.decrease"))
 
     def on_hardware_mute(self):
         """Called when hardware switch is set to mute"""
