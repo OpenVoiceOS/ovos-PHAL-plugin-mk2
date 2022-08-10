@@ -126,7 +126,7 @@ class FanControl:
             hdw_speed = self.HDW_MIN
 
         hdw_speed = str(hdw_speed)
-        cmd = ["i2cset", "-y", "1", "0x04", "101", hdw_speed, "i"]
+        cmd = ["i2cset", "-a", "-y", "1", "0x04", "101", hdw_speed, "i"]
         out, err = self.execute_cmd(cmd)
 
     def set_fan_speed(self, speed):
