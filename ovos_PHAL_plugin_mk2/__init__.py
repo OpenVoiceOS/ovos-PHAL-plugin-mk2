@@ -47,6 +47,10 @@ class MycroftMark2(PHALPlugin):
                                     })
         self.led_thread.start()
 
+    def shutdown(self):
+        self.temperatureMonitorThread.exit_flag.set()
+        super().shutdown()
+
     def _on_mute(self, val):
         LOG.debug("Mark2:HardwareEnclosure:handle_mute() - val = %s" % (val,))
         if val != self._last_mute:

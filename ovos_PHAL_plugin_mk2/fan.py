@@ -15,20 +15,18 @@ import abc
 import subprocess
 import threading
 
-import time
 from ovos_utils.log import LOG
 
 
 class TemperatureMonitorThread(threading.Thread):
     def __init__(self, fan_obj=None):
         self.fan_obj = fan_obj or FanControl()
-        self.exit_flag = False
+        self.exit_flag = threading.Event()
         threading.Thread.__init__(self)
 
     def run(self):
         LOG.debug("temperature monitor thread started")
-        while not self.exit_flag:
-            time.sleep(60)
+        while not self.exit_flag.wait(60):
             LOG.debug(f"CPU temperature is {self.fan_obj.get_cpu_temp()}")
 
             # TODO make this ratiometric
