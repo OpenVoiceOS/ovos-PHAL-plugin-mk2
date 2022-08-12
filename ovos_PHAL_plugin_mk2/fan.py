@@ -26,7 +26,7 @@ class TemperatureMonitorThread(threading.Thread):
 
     def run(self):
         LOG.debug("temperature monitor thread started")
-        while not self.exit_flag.wait(60):
+        while not self.exit_flag.wait(30):
             LOG.debug(f"CPU temperature is {self.fan_obj.get_cpu_temp()}")
 
             # TODO make this ratiometric
@@ -40,19 +40,19 @@ class TemperatureMonitorThread(threading.Thread):
             if 50.0 < current_temperature < 60.0:
                 # 122 - 140F we run fan at 25%
                 self.fan_obj.set_fan_speed(25)
-                LOG.debug("Fan set to 25%")
+                LOG.info("Fan set to 25%")
                 continue
 
             if 60.0 < current_temperature <= 70.0:
                 # 140 - 160F we run fan at 50%
                 self.fan_obj.set_fan_speed(50)
-                LOG.debug("Fan set to 50%")
+                LOG.info("Fan set to 50%")
                 continue
 
             if current_temperature > 70.0:
                 # > 160F we run fan at 100%
                 self.fan_obj.set_fan_speed(100)
-                LOG.debug("Fan set to 100%")
+                LOG.info("Fan set to 100%")
                 continue
 
 
