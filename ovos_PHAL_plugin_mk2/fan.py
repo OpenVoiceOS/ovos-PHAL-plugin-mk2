@@ -29,31 +29,20 @@ class TemperatureMonitorThread(threading.Thread):
         while not self.exit_flag.wait(30):
             LOG.debug(f"CPU temperature is {self.fan_obj.get_cpu_temp()}")
 
-            # TODO make this ratiometric
             current_temperature = self.fan_obj.get_cpu_temp()
             if current_temperature < 50.0:
                 # anything below 122F we are fine
-                self.fan_obj.set_fan_speed(0)
-                LOG.debug("Fan turned off")
-                continue
+                fan_speed = 0
+                LOG.debug("Temp below 50C")
+            elif current_temperature > 80.0:
+                LOG.warning("Thermal Throttling")
+                fan_speed = 100
+            else:
+                fan_speed = 3.33 * (current_temperature - 50)
+                LOG.info(f"temp={current_temperature}")
 
-            if 50.0 < current_temperature < 60.0:
-                # 122 - 140F we run fan at 25%
-                self.fan_obj.set_fan_speed(25)
-                LOG.info("Fan set to 25%")
-                continue
-
-            if 60.0 < current_temperature <= 70.0:
-                # 140 - 160F we run fan at 50%
-                self.fan_obj.set_fan_speed(50)
-                LOG.info("Fan set to 50%")
-                continue
-
-            if current_temperature > 70.0:
-                # > 160F we run fan at 100%
-                self.fan_obj.set_fan_speed(100)
-                LOG.info("Fan set to 100%")
-                continue
+            LOG.info(f"Setting fan speed to: {fan_speed}")
+            self.fan_obj.set_fan_speed(fan_speed)
 
 
 class FanControl:
