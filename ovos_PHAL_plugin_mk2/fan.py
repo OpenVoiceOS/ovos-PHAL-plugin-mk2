@@ -22,6 +22,7 @@ class TemperatureMonitorThread(threading.Thread):
     def __init__(self, fan_obj=None):
         self.fan_obj = fan_obj or FanControl()
         self.exit_flag = threading.Event()
+        self._max_fanless_temp = 60.0
         threading.Thread.__init__(self)
 
     def run(self):
@@ -29,17 +30,20 @@ class TemperatureMonitorThread(threading.Thread):
         while not self.exit_flag.wait(30):
             LOG.debug(f"CPU temperature is {self.fan_obj.get_cpu_temp()}")
 
-            current_temperature = self.fan_obj.get_cpu_temp()
-            if current_temperature < 50.0:
-                # anything below 122F we are fine
+            current_temp = self.fan_obj.get_cpu_temp()
+            if current_temp < self._max_fanless_temp:
+                # Below specified fanless temperature
                 fan_speed = 0
-                LOG.debug("Temp below 50C")
-            elif current_temperature > 80.0:
+                LOG.debug(f"Temp below {self._max_fanless_temp}")
+            elif current_temp > 80.0:
                 LOG.warning("Thermal Throttling")
                 fan_speed = 100
             else:
-                fan_speed = 3.33 * (current_temperature - 50)
-                LOG.info(f"temp={current_temperature}")
+                # Specify linear fan curve inside normal operating temp range
+                speed_const = 100/(80.0-self._max_fanless_temp)
+                fan_speed = speed_const * (current_temp -
+                                           self._max_fanless_temp)
+                LOG.info(f"temp={current_temp}")
 
             LOG.info(f"Setting fan speed to: {fan_speed}")
             self.fan_obj.set_fan_speed(fan_speed)
