@@ -15,47 +15,38 @@ import abc
 import subprocess
 import threading
 
-import time
 from ovos_utils.log import LOG
 
 
 class TemperatureMonitorThread(threading.Thread):
     def __init__(self, fan_obj=None):
         self.fan_obj = fan_obj or FanControl()
-        self.exit_flag = False
+        self.exit_flag = threading.Event()
+        self._max_fanless_temp = 60.0
         threading.Thread.__init__(self)
 
     def run(self):
         LOG.debug("temperature monitor thread started")
-        while not self.exit_flag:
-            time.sleep(60)
+        while not self.exit_flag.wait(30):
             LOG.debug(f"CPU temperature is {self.fan_obj.get_cpu_temp()}")
 
-            # TODO make this ratiometric
-            current_temperature = self.fan_obj.get_cpu_temp()
-            if current_temperature < 50.0:
-                # anything below 122F we are fine
-                self.fan_obj.set_fan_speed(0)
-                LOG.debug("Fan turned off")
-                continue
+            current_temp = self.fan_obj.get_cpu_temp()
+            if current_temp < self._max_fanless_temp:
+                # Below specified fanless temperature
+                fan_speed = 0
+                LOG.debug(f"Temp below {self._max_fanless_temp}")
+            elif current_temp > 80.0:
+                LOG.warning("Thermal Throttling")
+                fan_speed = 100
+            else:
+                # Specify linear fan curve inside normal operating temp range
+                speed_const = 100/(80.0-self._max_fanless_temp)
+                fan_speed = speed_const * (current_temp -
+                                           self._max_fanless_temp)
+                LOG.info(f"temp={current_temp}")
 
-            if 50.0 < current_temperature < 60.0:
-                # 122 - 140F we run fan at 25%
-                self.fan_obj.set_fan_speed(25)
-                LOG.debug("Fan set to 25%")
-                continue
-
-            if 60.0 < current_temperature <= 70.0:
-                # 140 - 160F we run fan at 50%
-                self.fan_obj.set_fan_speed(50)
-                LOG.debug("Fan set to 50%")
-                continue
-
-            if current_temperature > 70.0:
-                # > 160F we run fan at 100%
-                self.fan_obj.set_fan_speed(100)
-                LOG.debug("Fan set to 100%")
-                continue
+            LOG.info(f"Setting fan speed to: {fan_speed}")
+            self.fan_obj.set_fan_speed(fan_speed)
 
 
 class FanControl:
@@ -126,7 +117,7 @@ class FanControl:
             hdw_speed = self.HDW_MIN
 
         hdw_speed = str(hdw_speed)
-        cmd = ["i2cset", "-y", "1", "0x04", "101", hdw_speed, "i"]
+        cmd = ["i2cset", "-a", "-y", "1", "0x04", "101", hdw_speed, "i"]
         out, err = self.execute_cmd(cmd)
 
     def set_fan_speed(self, speed):
