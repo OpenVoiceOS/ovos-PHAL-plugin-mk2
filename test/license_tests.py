@@ -23,7 +23,7 @@ allow_unknown = False
 allow_unlicense = True
 allow_ambiguous = False
 
-pkg_name = "ovos-phal-mk1"
+pkg_name = "ovos-phal-mk2"
 
 
 class TestLicensing(unittest.TestCase):
