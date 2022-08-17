@@ -7,7 +7,7 @@ from ovos_plugin_manager.phal import PHALPlugin
 from mycroft_bus_client.message import Message
 import time
 from ovos_utils.log import LOG
-from threading import Lock
+# from threading import RLock
 
 
 class MycroftMark2Validator:
@@ -32,7 +32,7 @@ class MycroftMark2(PHALPlugin):
         self.switches.user_volup_handler = self.on_button_volup_press
         self._last_press = 0
 
-        self._volume_control_lock = Lock()
+        # self._volume_control_lock = RLock()
 
         # start the temperature monitor thread
         self.temperatureMonitorThread = TemperatureMonitorThread(self.fan)
@@ -72,19 +72,19 @@ class MycroftMark2(PHALPlugin):
 
     def on_button_volup_press(self):
         LOG.info("SJ201 VolumeUp button pressed")
-        # debounce this 1 second
-        with self._volume_control_lock.acquire(True, 0.5):
-            if time.time() - self._last_press > 0.5:
-                self._last_press = time.time()
-                self.bus.emit(Message("mycroft.volume.increase"))
+        # # debounce this 1 second
+        # with self._volume_control_lock:
+        #     if time.time() - self._last_press > 0.5:
+        #         self._last_press = time.time()
+        self.bus.emit(Message("mycroft.volume.increase"))
 
     def on_button_voldown_press(self):
         LOG.info("SJ201 VolumeDown button pressed")
-        # debounce this 1 second
-        with self._volume_control_lock.acquire(True, 0.5):
-            if time.time() - self._last_press > 0.5:
-                self._last_press = time.time()
-                self.bus.emit(Message("mycroft.volume.decrease"))
+        # # debounce this 1 second
+        # with self._volume_control_lock:
+        #     if time.time() - self._last_press > 0.5:
+        #         self._last_press = time.time()
+        self.bus.emit(Message("mycroft.volume.decrease"))
 
     def on_hardware_mute(self):
         """Called when hardware switch is set to mute"""
