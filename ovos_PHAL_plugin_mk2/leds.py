@@ -168,7 +168,7 @@ class Led(MycroftLed):
                 self.device_addr, 0,
                 rgb * self.num_leds
             )
-        except ValueError:
+        except ValueError:  # TODO: This results in a "chase" animation, better method?
             for led in range(0, self.num_leds):
                 self.set_led(led, color)
 
