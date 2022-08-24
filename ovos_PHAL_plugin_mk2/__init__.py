@@ -46,6 +46,8 @@ class MycroftMark2(PHALPlugin):
                                                                    ),
                                     })
         self.led_thread.start()
+        if self.switches.SW_MUTE == 1:
+            self.on_hardware_mute()
 
     def shutdown(self):
         self.temperatureMonitorThread.exit_flag.set()

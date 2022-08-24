@@ -29,7 +29,7 @@ class Palette:
     GREEN = (0, 255, 0)
     BLUE = (0, 0, 255)
     MAGENTA = (255, 0, 255)
-    BURNT_ORANGE = (204, 85, 0)
+    BURNT_ORANGE = (173, 64, 0)
     MYCROFT_RED = (216, 17, 89)
     MYCROFT_GREEN = (64, 219, 176)
     MYCROFT_BLUE = (34, 167, 240)
@@ -88,7 +88,7 @@ class MycroftLed:
 
 class Led(MycroftLed):
     real_num_leds = 12  # physical
-    num_leds = 10  # logical
+    num_leds = 12  # logical
     black = (0, 0, 0)  # TODO pull from palette
     device_addr = 0x04
 
