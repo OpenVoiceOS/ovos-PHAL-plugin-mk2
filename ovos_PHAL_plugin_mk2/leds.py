@@ -161,16 +161,20 @@ class Led(MycroftLed):
         """fill all leds with the same color"""
         rgb = [int(self.adjust_brightness(c, self.brightness))
                for c in color[:3]]
-
-        try:
-            # Write all colors at once
+        leds_to_write = self.num_leds
+        last_written_idx = 0
+        while leds_to_write > 10:
+            leds_to_write = leds_to_write - 10
             self.bus.write_i2c_block_data(
-                self.device_addr, 0,
-                rgb * self.num_leds
+                self.device_addr, last_written_idx,
+                rgb * 10
             )
-        except ValueError:  # TODO: This results in a "chase" animation, better method?
-            for led in range(0, self.num_leds):
-                self.set_led(led, color)
+            last_written_idx += 10
+        if leds_to_write > 0:
+            self.bus.write_i2c_block_data(
+                self.device_addr, last_written_idx,
+                rgb * leds_to_write
+            )
 
     def set_leds(self, new_leds):
         """set leds from tuple array"""
