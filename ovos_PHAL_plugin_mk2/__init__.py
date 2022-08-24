@@ -79,26 +79,19 @@ class MycroftMark2(PHALPlugin):
         """Called when hardware switch is set to mute"""
         # Triggers red border
         self.bus.emit(Message("mycroft.mic.mute"))
+        self.leds.set_leds(
+            [Palette.BURNT_ORANGE for _ in range(self.leds.num_leds)]
+        )
 
     def on_hardware_unmute(self):
         """Called when hardware switch is set to unmute"""
         # Removes red border
         self.bus.emit(Message("mycroft.mic.unmute"))
+        self.turn_off_leds()
 
     def turn_off_leds(self):
         self.leds.set_leds(
-            [
-                Palette.BLACK,
-                Palette.BLACK,
-                Palette.BLACK,
-                Palette.BLACK,
-                Palette.BLACK,
-                Palette.BLACK,
-                Palette.BLACK,
-                Palette.BLACK,
-                Palette.BLACK,
-                Palette.BLACK,
-            ]
+            [Palette.BLACK for _ in range(self.leds.num_leds)]
         )
 
     # Audio Events

@@ -88,8 +88,8 @@ class MycroftLed:
 
 class Led(MycroftLed):
     real_num_leds = 12  # physical
-    num_leds = 10  # logical
-    black = (0, 0, 0)  # TODO pull from pallette
+    num_leds = 12  # logical
+    black = (0, 0, 0)  # TODO pull from palette
     device_addr = 0x04
 
     def __init__(self):
