@@ -18,7 +18,7 @@ from queue import Queue
 
 import time
 from ovos_utils.log import LOG
-from smbus2 import SMBus
+from smbus2.smbus2 import SMBus, I2C_SMBUS_BLOCK_MAX
 
 
 class Palette:
@@ -159,17 +159,19 @@ class Led(MycroftLed):
 
     def fill(self, color):
         """fill all leds with the same color"""
+
         rgb = [int(self.adjust_brightness(c, self.brightness))
                for c in color[:3]]
+        led_per_block = int(I2C_SMBUS_BLOCK_MAX / rgb.__sizeof__())
         leds_to_write = self.num_leds
         last_written_idx = 0
-        while leds_to_write > 10:
-            leds_to_write = leds_to_write - 10
+        while leds_to_write > led_per_block:
+            leds_to_write = leds_to_write - led_per_block
             self.bus.write_i2c_block_data(
                 self.device_addr, last_written_idx,
-                rgb * 10
+                rgb * led_per_block
             )
-            last_written_idx += 10
+            last_written_idx += led_per_block
         if leds_to_write > 0:
             self.bus.write_i2c_block_data(
                 self.device_addr, last_written_idx,
