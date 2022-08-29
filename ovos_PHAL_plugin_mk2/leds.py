@@ -163,7 +163,7 @@ class Led(MycroftLed):
         rgb = [int(self.adjust_brightness(c, self.brightness))
                for c in color[:3]]
         try:
-            led_per_block = int(I2C_SMBUS_BLOCK_MAX / rgb.__sizeof__())
+            led_per_block = int(str(I2C_SMBUS_BLOCK_MAX / 3).split('.')[0])
         except Exception as e:
             LOG.exception(e)
             led_per_block = 10
