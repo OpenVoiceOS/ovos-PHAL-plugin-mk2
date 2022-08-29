@@ -163,13 +163,14 @@ class Led(MycroftLed):
         rgb = [int(self.adjust_brightness(c, self.brightness))
                for c in color[:3]]
         try:
+            # Each element in rgb is a 3 byte tuple
             led_per_block = int(str(I2C_SMBUS_BLOCK_MAX / 3).split('.')[0])
         except Exception as e:
             LOG.exception(e)
             led_per_block = 10
         leds_to_write = self.num_leds
         last_written_idx = 0
-        LOG.info(f"Writing {leds_to_write} in blocks of {led_per_block}")
+        LOG.debug(f"Writing {leds_to_write} LEDs in blocks of {led_per_block}")
         while leds_to_write > led_per_block:
             leds_to_write = leds_to_write - led_per_block
             self.bus.write_i2c_block_data(
