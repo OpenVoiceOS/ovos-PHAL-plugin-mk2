@@ -18,7 +18,7 @@ from queue import Queue
 
 import time
 from ovos_utils.log import LOG
-from smbus2 import SMBus
+from smbus2.smbus2 import SMBus, I2C_SMBUS_BLOCK_MAX
 
 
 class Palette:
@@ -29,7 +29,7 @@ class Palette:
     GREEN = (0, 255, 0)
     BLUE = (0, 0, 255)
     MAGENTA = (255, 0, 255)
-    BURNT_ORANGE = (204, 85, 0)
+    BURNT_ORANGE = (173, 64, 0)
     MYCROFT_RED = (216, 17, 89)
     MYCROFT_GREEN = (64, 219, 176)
     MYCROFT_BLUE = (34, 167, 240)
@@ -88,8 +88,8 @@ class MycroftLed:
 
 class Led(MycroftLed):
     real_num_leds = 12  # physical
-    num_leds = 10  # logical
-    black = (0, 0, 0)  # TODO pull from pallette
+    num_leds = 12  # logical
+    black = (0, 0, 0)  # TODO pull from palette
     device_addr = 0x04
 
     def __init__(self):
@@ -159,14 +159,30 @@ class Led(MycroftLed):
 
     def fill(self, color):
         """fill all leds with the same color"""
+
         rgb = [int(self.adjust_brightness(c, self.brightness))
                for c in color[:3]]
-
-        # Write all colors at once
-        self.bus.write_i2c_block_data(
-            self.device_addr, 0,
-            rgb * self.num_leds
-        )
+        try:
+            # Each element in rgb is a 3 byte tuple
+            led_per_block = int(str(I2C_SMBUS_BLOCK_MAX / 3).split('.')[0])
+        except Exception as e:
+            LOG.exception(e)
+            led_per_block = 10
+        leds_to_write = self.num_leds
+        last_written_idx = 0
+        LOG.debug(f"Writing {leds_to_write} LEDs in blocks of {led_per_block}")
+        while leds_to_write > led_per_block:
+            leds_to_write = leds_to_write - led_per_block
+            self.bus.write_i2c_block_data(
+                self.device_addr, last_written_idx,
+                rgb * led_per_block
+            )
+            last_written_idx += led_per_block
+        if leds_to_write > 0:
+            self.bus.write_i2c_block_data(
+                self.device_addr, last_written_idx,
+                rgb * leds_to_write
+            )
 
     def set_leds(self, new_leds):
         """set leds from tuple array"""

@@ -46,6 +46,8 @@ class MycroftMark2(PHALPlugin):
                                                                    ),
                                     })
         self.led_thread.start()
+        if self.switches.SW_MUTE == 1:
+            self.on_hardware_mute()
 
     def shutdown(self):
         self.temperatureMonitorThread.exit_flag.set()
@@ -79,27 +81,16 @@ class MycroftMark2(PHALPlugin):
         """Called when hardware switch is set to mute"""
         # Triggers red border
         self.bus.emit(Message("mycroft.mic.mute"))
+        self.leds.fill(Palette.BURNT_ORANGE)
 
     def on_hardware_unmute(self):
         """Called when hardware switch is set to unmute"""
         # Removes red border
         self.bus.emit(Message("mycroft.mic.unmute"))
+        self.turn_off_leds()
 
     def turn_off_leds(self):
-        self.leds.set_leds(
-            [
-                Palette.BLACK,
-                Palette.BLACK,
-                Palette.BLACK,
-                Palette.BLACK,
-                Palette.BLACK,
-                Palette.BLACK,
-                Palette.BLACK,
-                Palette.BLACK,
-                Palette.BLACK,
-                Palette.BLACK,
-            ]
-        )
+        self.leds.fill(Palette.BLACK)
 
     # Audio Events
     def on_awake(self, message=None):
