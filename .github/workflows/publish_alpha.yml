@@ -6,7 +6,7 @@ on:
     branches:
       - dev
     paths-ignore:
-      - 'ovos_PHAL_plugin_wifi_setup/version.py'
+      - 'ovos_PHAL_plugin_mk2/version.py'
       - 'test/**'
       - '.github/**'
       - '.gitignore'
