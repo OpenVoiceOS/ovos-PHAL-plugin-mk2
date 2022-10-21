@@ -36,16 +36,16 @@ class TemperatureMonitorThread(threading.Thread):
                 fan_speed = 0
                 LOG.debug(f"Temp below {self._max_fanless_temp}")
             elif current_temp > 80.0:
-                LOG.warning("Thermal Throttling")
+                LOG.warning(f"Thermal Throttling, temp={current_temp}C")
                 fan_speed = 100
             else:
                 # Specify linear fan curve inside normal operating temp range
                 speed_const = 100/(80.0-self._max_fanless_temp)
                 fan_speed = speed_const * (current_temp -
                                            self._max_fanless_temp)
-                LOG.info(f"temp={current_temp}")
+                LOG.debug(f"temp={current_temp}")
 
-            LOG.info(f"Setting fan speed to: {fan_speed}")
+            LOG.debug(f"Setting fan speed to: {fan_speed}")
             self.fan_obj.set_fan_speed(fan_speed)
 
 
