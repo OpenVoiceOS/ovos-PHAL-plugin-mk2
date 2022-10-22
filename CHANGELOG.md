@@ -2,7 +2,20 @@
 
 ## [Unreleased](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-mk2/tree/HEAD)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-mk2/compare/3aa4a80dbfb1cf22b8e19d61a5fbe33d6d0dbe6a...HEAD)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-mk2/compare/V0.0.1a2...HEAD)
+
+**Closed issues:**
+
+- Log spam - temperature control [\#9](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-mk2/issues/9)
+
+**Merged pull requests:**
+
+- Update mk2 temperature and fan speed logs [\#10](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-mk2/pull/10) ([NeonDaniel](https://github.com/NeonDaniel))
+- Update PyPI Action name and action spec [\#6](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-mk2/pull/6) ([NeonDaniel](https://github.com/NeonDaniel))
+
+## [V0.0.1a2](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-mk2/tree/V0.0.1a2) (2022-09-08)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-mk2/compare/3aa4a80dbfb1cf22b8e19d61a5fbe33d6d0dbe6a...V0.0.1a2)
 
 **Fixed bugs:**
 
