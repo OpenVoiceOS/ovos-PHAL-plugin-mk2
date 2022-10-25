@@ -1,19 +1,24 @@
-from ovos_PHAL.detection import is_mycroft_sj201
-from ovos_PHAL_plugin_mk2.fan import FanControl, TemperatureMonitorThread
+# from ovos_PHAL.detection import is_mycroft_sj201
+from ovos_PHAL_plugin_mk2.fan import TemperatureMonitorThread
 from ovos_PHAL_plugin_mk2.leds import ChaseLedAnimation, LedAnimation, \
-    PulseLedAnimation, Led, Palette, LedThread
-from ovos_PHAL_plugin_mk2.switch import Switch
+    PulseLedAnimation, LedThread
+# from ovos_PHAL_plugin_mk2.switch import Switch
 from ovos_plugin_manager.phal import PHALPlugin
 from mycroft_bus_client.message import Message
 import time
 from ovos_utils.log import LOG
+
+from sj201_interface.revisions import detect_sj201_revision
+from sj201_interface.fan import get_fan
+from sj201_interface.led import get_led, Palette
+from sj201_interface.switches import get_switches
 
 
 class MycroftMark2Validator:
     @staticmethod
     def validate(config=None):
         # check i2c to determine if sj201 is connected
-        return is_mycroft_sj201()
+        return detect_sj201_revision() is not None
 
 
 class MycroftMark2(PHALPlugin):
@@ -21,9 +26,10 @@ class MycroftMark2(PHALPlugin):
 
     def __init__(self, bus=None, config=None):
         super().__init__(bus=bus, name="ovos-PHAL-plugin-mk2", config=config)
-        self.fan = FanControl()
-        self.leds = Led()
-        self.switches = Switch()
+        self.revision = detect_sj201_revision()
+        self.fan = get_fan(self.revision)
+        self.leds = get_led(self.revision)
+        self.switches = get_switches(self.revision)
         self.switches.user_mute_handler = self._on_mute
         self._last_mute = -1
         self.switches.user_action_handler = self.on_button_press

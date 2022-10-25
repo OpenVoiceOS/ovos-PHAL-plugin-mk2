@@ -182,20 +182,3 @@ class Switch:
 
         if self.user_mute_handler is not None:
             self.user_mute_handler(self.SW_MUTE)
-
-    # recycle xmos power
-    def reset_xmos(self):
-        LOG.info("switch_gpio: reset_xmos() hit")
-        """
-        GPIO.output(self._XMOS_RESET, 0)
-        time.sleep(0.001)
-        GPIO.output(self._XMOS_POWER, 0)
-        time.sleep(0.001)
-        GPIO.output(self._XMOS_POWER, 1)
-        time.sleep(0.001)
-        GPIO.output(self._XMOS_RESET, 1)
-        """
-
-    def terminate(self):
-        LOG.info("switch_gpio: terminate hit, calling GPIO.cleanup()")
-        # GPIO.cleanup()
