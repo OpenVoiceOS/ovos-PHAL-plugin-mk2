@@ -1,16 +1,13 @@
-# from ovos_PHAL.detection import is_mycroft_sj201
-from ovos_PHAL_plugin_mk2.fan import TemperatureMonitorThread
-from ovos_PHAL_plugin_mk2.leds import ChaseLedAnimation, LedAnimation, \
-    PulseLedAnimation, LedThread
-# from ovos_PHAL_plugin_mk2.switch import Switch
+import time
+
 from ovos_plugin_manager.phal import PHALPlugin
 from mycroft_bus_client.message import Message
-import time
 from ovos_utils.log import LOG
 
 from sj201_interface.revisions import detect_sj201_revision
-from sj201_interface.fan import get_fan
-from sj201_interface.led import get_led, Palette
+from sj201_interface.fan import get_fan, FanControlThread
+from sj201_interface.led import get_led, Palette, LedThread
+from sj201_interface.led.animations import ChaseLedAnimation, PulseLedAnimation
 from sj201_interface.switches import get_switches
 
 
@@ -38,8 +35,8 @@ class MycroftMark2(PHALPlugin):
         self._last_press = 0
 
         # start the temperature monitor thread
-        self.temperatureMonitorThread = TemperatureMonitorThread(self.fan)
-        self.temperatureMonitorThread.start()
+        self.fan_thread = FanControlThread(self.fan)
+        self.fan_thread.start()
 
         # init leds all turned off
         self.turn_off_leds()
@@ -56,7 +53,8 @@ class MycroftMark2(PHALPlugin):
             self.on_hardware_mute()
 
     def shutdown(self):
-        self.temperatureMonitorThread.exit_flag.set()
+        self.fan_thread.exit_flag.set()
+        self.led_thread.exit_flag.set()
         super().shutdown()
 
     def _on_mute(self, val):
@@ -69,7 +67,7 @@ class MycroftMark2(PHALPlugin):
                 self.on_hardware_mute()
 
     def on_button_press(self):
-        LOG.debug("SJ201 Listen button pressed")
+        LOG.info("SJ201 Listen button pressed")
         # debounce this 10 seconds
         if time.time() - self._last_press > 10:
             self._last_press = time.time()
@@ -100,17 +98,17 @@ class MycroftMark2(PHALPlugin):
 
     # Audio Events
     def on_awake(self, message=None):
-        ''' on wakeup animation '''
+        """ on wakeup animation """
         # TODO new led animation
 
     def on_sleep(self, message=None):
-        ''' on naptime animation '''
+        """ on naptime animation """
         # TODO new led animation
         self.turn_off_leds()
 
     def on_reset(self, message=None):
         """The enclosure should restore itself to a started state.
-        Typically this would be represented by the eyes being 'open'
+        Typically, this would be represented by the eyes being 'open'
         and the mouth reset to its default (smile or blank).
         """
         self.turn_off_leds()
