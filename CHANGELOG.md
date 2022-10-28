@@ -2,11 +2,20 @@
 
 ## [Unreleased](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-mk2/tree/HEAD)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-mk2/compare/V0.0.1a2...HEAD)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-mk2/compare/V0.0.1a3...HEAD)
 
 **Closed issues:**
 
 - Log spam - temperature control [\#9](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-mk2/issues/9)
+- SJ201 Version Detection [\#8](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-mk2/issues/8)
+
+**Merged pull requests:**
+
+- Feat implement sj201 interface package [\#11](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-mk2/pull/11) ([NeonDaniel](https://github.com/NeonDaniel))
+
+## [V0.0.1a3](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-mk2/tree/V0.0.1a3) (2022-10-22)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-mk2/compare/V0.0.1a2...V0.0.1a3)
 
 **Merged pull requests:**
 
