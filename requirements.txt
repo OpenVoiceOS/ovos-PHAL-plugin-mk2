@@ -1,3 +1,2 @@
 ovos-plugin-manager
-smbus2
-RPi.GPIO
+sj201-interface
