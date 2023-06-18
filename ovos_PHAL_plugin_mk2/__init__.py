@@ -1,7 +1,7 @@
 import time
 
 from ovos_plugin_manager.phal import PHALPlugin
-from mycroft_bus_client.message import Message
+from ovos_bus_client.message import Message
 from ovos_utils.log import LOG
 
 from sj201_interface.revisions import detect_sj201_revision
